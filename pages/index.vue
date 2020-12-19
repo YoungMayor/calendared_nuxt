@@ -1,19 +1,28 @@
 <template>
     <v-row justify="center" align="center">
-        <v-col cols="12" sm="10" md="10">
-            <v-sheet v-if="$refs.calendar">
+        <v-col cols="12" sm="6" lg="5">
+            <v-sheet v-if="$refs.calendar_one">
                 <h1 class="text-center">
-                    {{ $refs.calendar.title }}
+                    {{ $refs.calendar_one.title }}
                 </h1>
             </v-sheet>
 
-            <v-sheet height="600" class="d-flex align-center">
-                <v-btn icon class="ma-2" @click="$refs.calendar.prev()">
+            <v-sheet class="d-flex justify-space-between">
+                <v-btn class="ma-2" @click="$refs.calendar_one.prev()">
                     <v-icon>mdi-chevron-left</v-icon>
+                    Previous
                 </v-btn>
+
+                <v-btn class="ma-2" @click="$refs.calendar_one.next()">
+                    Next
+                    <v-icon>mdi-chevron-right</v-icon>
+                </v-btn>
+            </v-sheet>
+
+            <v-sheet height="600" class="d-flex align-center">
                 <v-calendar
-                    ref="calendar"
-                    v-model="value"
+                    ref="calendar_one"
+                    v-model="calendar_one_value"
                     :weekdays="weekday"
                     :type="type"
                     :events="events"
@@ -23,9 +32,41 @@
                     @change="getEvents"
                     @click:date="viewDay"
                 ></v-calendar>
-                <v-btn icon class="ma-2" @click="$refs.calendar.next()">
+            </v-sheet>
+        </v-col>
+
+        <v-col cols="12" sm="6" lg="5">
+            <v-sheet v-if="$refs.calendar_two">
+                <h1 class="text-center">
+                    {{ $refs.calendar_two.title }}
+                </h1>
+            </v-sheet>
+
+            <v-sheet class="d-flex justify-space-between">
+                <v-btn class="ma-2" @click="$refs.calendar_two.prev()">
+                    <v-icon>mdi-chevron-left</v-icon>
+                    Previous
+                </v-btn>
+
+                <v-btn class="ma-2" @click="$refs.calendar_two.next()">
+                    Next
                     <v-icon>mdi-chevron-right</v-icon>
                 </v-btn>
+            </v-sheet>
+
+            <v-sheet height="600" class="d-flex align-center">
+                <v-calendar
+                    ref="calendar_two"
+                    v-model="calendar_two_value"
+                    :weekdays="weekday"
+                    :type="type"
+                    :events="events"
+                    :event-overlap-mode="mode"
+                    :event-overlap-threshold="30"
+                    :event-color="getEventColor"
+                    @change="getEvents"
+                    @click:date="viewDay"
+                ></v-calendar>
             </v-sheet>
         </v-col>
 
@@ -73,7 +114,8 @@ export default {
         type: "month",
         mode: "stack",
         weekday: [0, 1, 2, 3, 4, 5, 6],
-        value: "",
+        calendar_one_value: "",
+        calendar_two_value: "",
         events: [],
         colors: [
             "blue",
@@ -118,24 +160,14 @@ export default {
             const eventCount = this.rnd(days, days + 20);
 
             for (let i = 0; i < eventCount; i++) {
-                const allDay = this.rnd(0, 3) === 0;
                 const firstTimestamp = this.rnd(min.getTime(), max.getTime());
                 const first = new Date(
                     firstTimestamp - (firstTimestamp % 900000)
                 );
-                const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000;
-                const second = new Date(first.getTime() + secondTimestamp);
-
                 events.push({
-                    // name: this.names[this.rnd(0, this.names.length - 1)],
                     name: "",
                     start: first,
-                    // end: second,
-                    end: first,
-                    // color: this.colors[this.rnd(0, this.colors.length - 1)],
                     color: "green",
-                    // timed: !allDay,
-                    timed: false,
                 });
             }
 
