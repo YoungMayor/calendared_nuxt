@@ -78,7 +78,7 @@
 
         <v-bottom-sheet v-model="sheet" persistent scrollable>
             <v-card>
-                <v-card-title> Date Opened here </v-card-title>
+                <v-card-title> {{ table_title }} </v-card-title>
 
                 <v-divider></v-divider>
 
@@ -102,6 +102,21 @@
                 </v-card-actions>
             </v-card>
         </v-bottom-sheet>
+
+        <v-snackbar v-model="get_event_error">
+            There was an error with your request
+
+            <template v-slot:action="{ attrs }">
+                <v-btn
+                    color="pink"
+                    text
+                    v-bind="attrs"
+                    @click="get_event_error = false"
+                >
+                    Close
+                </v-btn>
+            </template>
+        </v-snackbar>
     </v-row>
 </template>
 
@@ -125,6 +140,7 @@ export default {
         calendar_two_value: "",
         events: [],
 
+        table_title: "",
         table_headers: [
             { text: "Event ID", align: "start", value: "id" },
             { text: "Auction Type", value: "type" },
@@ -136,6 +152,7 @@ export default {
         ],
         table_events: [],
         table_loading: false,
+        get_event_error: false,
     }),
 
     methods: {
@@ -143,51 +160,28 @@ export default {
             return event.color;
         },
 
-        rnd(a, b) {
-            return Math.floor((b - a + 1) * Math.random()) + a;
-        },
-
         viewDay(payload) {
             console.log(payload);
             this.sheet = true;
             this.table_loading = true;
             this.table_events = [];
+            this.table_title = "loading...";
 
-            setTimeout(() => {
-                this.table_loading = false;
-                this.table_events = [
-                    {
-                        id: "1335",
-                        type: "Sale",
-                        initiator: "Most Energy",
-                        name:
-                            "IBEX Auction (Buyers) (01.06-31.12). 2020 Baseload",
-                        wap: 74.27,
-                        load: "14",
-                        participants: "Example User",
-                    },
-                    {
-                        id: "1336",
-                        type: "Sale",
-                        initiator: "Most Energy",
-                        name:
-                            "IBEX Auction (Buyers) (01.06-31.12). 2020 Baseload",
-                        wap: 74.27,
-                        load: "14",
-                        participants: "Example User",
-                    },
-                    {
-                        id: "1337",
-                        type: "Sale",
-                        initiator: "Most Energy",
-                        name:
-                            "IBEX Auction (Buyers) (01.06-31.12). 2020 Baseload",
-                        wap: 74.27,
-                        load: "14",
-                        participants: "Example User",
-                    },
-                ];
-            }, 3500);
+            this.$axios
+                .get(`/events/${payload.date}`)
+                .then((response) => {
+                    this.table_title = response.data.message;
+                    this.table_events = response.data.payload;
+                    console.log(response);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    this.get_event_error = true;
+                    this.sheet = false;
+                })
+                .finally(() => {
+                    this.table_loading = false;
+                });
         },
     },
 
