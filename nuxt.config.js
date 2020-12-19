@@ -68,6 +68,19 @@ export default {
         }
     },
 
+    // Axios module configuration (https://go.nuxtjs.dev/config-axios)
+    axios: {
+        baseURL: process.env.NUXT_ENV_API_URL,
+        // credentials: true,
+        progress: true,
+        headers: {
+            common: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        }
+    },
+
     // Build Configuration (https://go.nuxtjs.dev/config-build)
     build: {}
 }
