@@ -1,10 +1,18 @@
 <template>
     <v-row justify="center" align="center">
+        <v-col cols="12" md="10">
+            <v-sheet>
+                <h1 class="text-center">
+                    {{ page_title }}
+                </h1>
+            </v-sheet>
+        </v-col>
+
         <v-col cols="12" sm="6" lg="5">
             <v-sheet v-if="$refs.calendar_one">
-                <h1 class="text-center">
+                <h2 class="text-center">
                     {{ $refs.calendar_one.title }}
-                </h1>
+                </h2>
             </v-sheet>
 
             <v-sheet class="d-flex justify-space-between">
@@ -29,7 +37,6 @@
                     :event-overlap-mode="mode"
                     :event-overlap-threshold="30"
                     :event-color="getEventColor"
-                    @change="getEvents"
                     @click:date="viewDay"
                 ></v-calendar>
             </v-sheet>
@@ -37,9 +44,9 @@
 
         <v-col cols="12" sm="6" lg="5">
             <v-sheet v-if="$refs.calendar_two">
-                <h1 class="text-center">
+                <h2 class="text-center">
                     {{ $refs.calendar_two.title }}
-                </h1>
+                </h2>
             </v-sheet>
 
             <v-sheet class="d-flex justify-space-between">
@@ -64,7 +71,6 @@
                     :event-overlap-mode="mode"
                     :event-overlap-threshold="30"
                     :event-color="getEventColor"
-                    @change="getEvents"
                     @click:date="viewDay"
                 ></v-calendar>
             </v-sheet>
@@ -110,6 +116,7 @@ export default {
     name: "CalendarPage",
 
     data: () => ({
+        page_title: "",
         sheet: false,
         type: "month",
         mode: "stack",
@@ -117,25 +124,6 @@ export default {
         calendar_one_value: "",
         calendar_two_value: "",
         events: [],
-        colors: [
-            "blue",
-            "indigo",
-            "deep-purple",
-            "cyan",
-            "green",
-            "orange",
-            "grey darken-1",
-        ],
-        names: [
-            "Meeting",
-            "Holiday",
-            "PTO",
-            "Travel",
-            "Event",
-            "Birthday",
-            "Conference",
-            "Party",
-        ],
 
         table_headers: [
             { text: "Event ID", align: "start", value: "id" },
@@ -151,29 +139,6 @@ export default {
     }),
 
     methods: {
-        getEvents({ start, end }) {
-            const events = [];
-
-            const min = new Date(`${start.date}T00:00:00`);
-            const max = new Date(`${end.date}T23:59:59`);
-            const days = (max.getTime() - min.getTime()) / 86400000;
-            const eventCount = this.rnd(days, days + 20);
-
-            for (let i = 0; i < eventCount; i++) {
-                const firstTimestamp = this.rnd(min.getTime(), max.getTime());
-                const first = new Date(
-                    firstTimestamp - (firstTimestamp % 900000)
-                );
-                events.push({
-                    name: "",
-                    start: first,
-                    color: "green",
-                });
-            }
-
-            this.events = events;
-        },
-
         getEventColor(event) {
             return event.color;
         },
@@ -224,6 +189,30 @@ export default {
                 ];
             }, 3500);
         },
+    },
+
+    async asyncData(context) {
+        try {
+            let response = await context.$axios.get("/events");
+            const title = response.data.message;
+            const payload = response.data.payload;
+
+            let events = [];
+            payload.forEach((event, index) => {
+                events.push({
+                    name: `${event.events} event(s)`,
+                    start: event.date,
+                    color: "green",
+                });
+            });
+
+            return {
+                events: events,
+                page_title: title,
+            };
+        } catch (err) {
+            console.log(err);
+        }
     },
 };
 </script>
