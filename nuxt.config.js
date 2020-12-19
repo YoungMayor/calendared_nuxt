@@ -22,10 +22,14 @@ export default {
     },
 
     // Global CSS (https://go.nuxtjs.dev/config-css)
-    css: [],
+    css: [
+        "@braid/vue-formulate/dist/snow.min.css"
+    ],
 
     // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-    plugins: [],
+    plugins: [
+        '@/plugins/vue_formulate.js'
+    ],
 
     // Auto import components (https://go.nuxtjs.dev/config-components)
     components: true,

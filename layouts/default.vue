@@ -62,13 +62,18 @@ export default {
     data() {
         return {
             clipped: true,
-            drawer: true,
+            drawer: false,
             fixed: true,
             items: [
                 {
                     icon: "mdi-apps",
                     title: "Calendar",
                     to: "/",
+                },
+                {
+                    icon: "mdi-cloud-upload",
+                    title: "Upload",
+                    to: "/upload",
                 },
             ],
             miniVariant: true,
