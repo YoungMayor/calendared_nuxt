@@ -81,7 +81,7 @@ export default {
 
                 formData.append("file", file);
 
-                await this.$axios.post("/upload", formData);
+                await this.$axios.post("/events", formData);
                 progress(100);
                 this.uploaded = true;
                 this.$router.replace("/");
