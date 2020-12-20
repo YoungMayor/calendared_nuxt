@@ -38,6 +38,7 @@
                     :event-overlap-threshold="30"
                     :event-color="getEventColor"
                     @click:date="viewDay"
+                    @click:event="viewEvent"
                 ></v-calendar>
             </v-sheet>
         </v-col>
@@ -72,6 +73,7 @@
                     :event-overlap-threshold="30"
                     :event-color="getEventColor"
                     @click:date="viewDay"
+                    @click:event="viewEvent"
                 ></v-calendar>
             </v-sheet>
         </v-col>
@@ -160,19 +162,17 @@ export default {
             return event.color;
         },
 
-        viewDay(payload) {
-            console.log(payload);
+        viewDay({ date }) {
             this.sheet = true;
             this.table_loading = true;
             this.table_events = [];
             this.table_title = "loading...";
 
             this.$axios
-                .get(`/events/${payload.date}`)
+                .get(`/events/${date}`)
                 .then((response) => {
                     this.table_title = response.data.message;
                     this.table_events = response.data.payload;
-                    console.log(response);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -182,6 +182,10 @@ export default {
                 .finally(() => {
                     this.table_loading = false;
                 });
+        },
+
+        viewEvent({ day }) {
+            this.viewDay(day);
         },
     },
 
